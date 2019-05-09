@@ -20,18 +20,18 @@
     
     
     <meta name="keywords" content="framework">
-    <meta name="description" content="脚本开头 #!/bin/bash  脚本开头，符号#!用来告诉系统它后面的参数是用来执行该文件的程序。本例子中我们使用/bin/sh来执行程序。  执行sh脚本 当编辑好脚本时，如果要执行该脚本，还必须使其可执行。  即赋予sh脚本权限 12#shell 脚本中chmod +x filename 或者 12#Linux 下sudo chmod 777 filename  执行脚本 ./filen">
+    <meta name="description" content="脚本开头 1#!/bin/bash 脚本开头，符号#!用来告诉系统它后面的参数是用来执行该文件的程序。本例子中我们使用/bin/sh来执行程序。  执行sh脚本 当编辑好脚本时，如果要执行该脚本，还必须使其可执行。  即赋予sh脚本权限 12#bashchmod +x filename 或者 12#bashsudo chmod 777 filename    执行脚本 ./filename或者s">
 <meta name="keywords" content="framework">
 <meta property="og:type" content="article">
 <meta property="og:title" content="shell脚本学习">
 <meta property="og:url" content="https://github.com/skyxin888/2019/05/06/shell脚本学习/index.html">
 <meta property="og:site_name" content="Golden&#39;s Blog">
-<meta property="og:description" content="脚本开头 #!/bin/bash  脚本开头，符号#!用来告诉系统它后面的参数是用来执行该文件的程序。本例子中我们使用/bin/sh来执行程序。  执行sh脚本 当编辑好脚本时，如果要执行该脚本，还必须使其可执行。  即赋予sh脚本权限 12#shell 脚本中chmod +x filename 或者 12#Linux 下sudo chmod 777 filename  执行脚本 ./filen">
+<meta property="og:description" content="脚本开头 1#!/bin/bash 脚本开头，符号#!用来告诉系统它后面的参数是用来执行该文件的程序。本例子中我们使用/bin/sh来执行程序。  执行sh脚本 当编辑好脚本时，如果要执行该脚本，还必须使其可执行。  即赋予sh脚本权限 12#bashchmod +x filename 或者 12#bashsudo chmod 777 filename    执行脚本 ./filename或者s">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-05-07T09:04:43.291Z">
+<meta property="og:updated_time" content="2019-05-08T09:13:21.047Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="shell脚本学习">
-<meta name="twitter:description" content="脚本开头 #!/bin/bash  脚本开头，符号#!用来告诉系统它后面的参数是用来执行该文件的程序。本例子中我们使用/bin/sh来执行程序。  执行sh脚本 当编辑好脚本时，如果要执行该脚本，还必须使其可执行。  即赋予sh脚本权限 12#shell 脚本中chmod +x filename 或者 12#Linux 下sudo chmod 777 filename  执行脚本 ./filen">
+<meta name="twitter:description" content="脚本开头 1#!/bin/bash 脚本开头，符号#!用来告诉系统它后面的参数是用来执行该文件的程序。本例子中我们使用/bin/sh来执行程序。  执行sh脚本 当编辑好脚本时，如果要执行该脚本，还必须使其可执行。  即赋予sh脚本权限 12#bashchmod +x filename 或者 12#bashsudo chmod 777 filename    执行脚本 ./filename或者s">
     
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
@@ -176,15 +176,17 @@
         <div class="post-content" id="post-content" itemprop="postContent">
             <ul>
 <li><p><strong>脚本开头</strong></p>
-<p><code>#!/bin/bash</code> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br></pre></td></tr></table></figure>
 <p>脚本开头，符号#!用来告诉系统它后面的参数是用来执行该文件的程序。本例子中我们使用/bin/sh来执行程序。</p>
 </li>
 <li><p><strong>执行sh脚本</strong></p>
 <p>当编辑好脚本时，如果要执行该脚本，还必须使其可执行。  即赋予sh脚本权限</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">shell 脚本中</span></span><br><span class="line">chmod +x filename</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>bash</span><br><span class="line">chmod +x filename</span><br></pre></td></tr></table></figure>
 <p>或者</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">Linux 下</span></span><br><span class="line">sudo chmod 777 filename</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#bash</span></span><br><span class="line">sudo chmod 777 filename</span><br></pre></td></tr></table></figure>
 </li>
+</ul>
+<ul>
 <li><p><strong>执行脚本</strong></p>
 <p><code>./filename</code>或者<code>source filename</code></p>
 </li>
@@ -200,14 +202,66 @@
 <p>在进行shell编程时，以#开头的句子表示注释，直到这一行的结束。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="built_in">print</span> debug info</span></span><br></pre></td></tr></table></figure>
 <p>多行注释</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">:&lt;&lt;'COMMENT'</span><br><span class="line">语句1</span><br><span class="line">语句2</span><br><span class="line">语句3</span><br><span class="line">语句4</span><br><span class="line">COMMENT</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">:&lt;&lt;EOF</span><br><span class="line">语句1</span><br><span class="line">语句2</span><br><span class="line">语句3</span><br><span class="line">语句4</span><br><span class="line">EOF</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">#也可以用其他符号，如下：</span></span></span><br><span class="line">:&lt;&lt;'</span><br><span class="line">注释内容...</span><br><span class="line">注释内容...</span><br><span class="line">注释内容...</span><br><span class="line">'</span><br><span class="line"></span><br><span class="line">:&lt;&lt;!</span><br><span class="line">注释内容...</span><br><span class="line">注释内容...</span><br><span class="line">注释内容...</span><br><span class="line">!</span><br></pre></td></tr></table></figure>
+<p>但是貌似多行注释有一些问题，多行注释可以多行#来操作</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Note: on windows/cygwin, ANDROID_BUILD_PATHS will contain spaces                     </span></span><br><span class="line"><span class="meta">#</span><span class="bash"> due to <span class="string">"C:\Program Files"</span> being <span class="keyword">in</span> the path.</span></span><br></pre></td></tr></table></figure>
 </li>
+<li><p><strong>特殊符号</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">用来替换命令	</span></span><br><span class="line"><span class="meta">$</span><span class="bash">() </span></span><br><span class="line">`` </span><br><span class="line"><span class="meta">#</span><span class="bash">当前目录路径</span></span><br><span class="line">`pwd`</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
 <li><p><strong>变量</strong></p>
 <p>shell中，所有的变量都由字符串组成，并且不需要对变量进行声明。要赋值给一个变量，您可以这样写:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">变量名=值</span></span><br><span class="line">test=12</span><br><span class="line"><span class="meta">#</span><span class="bash">取出变量值可以加一个美元符号（$）在变量前面</span></span><br><span class="line">echo "var_1=$&#123;test&#125;"</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">变量名=值 注意变量名和等号之间不能有空格</span></span><br><span class="line"><span class="meta">#</span><span class="bash">命名只能使用英文字母，数字和下划线，首个字符不能以数字开头</span></span><br><span class="line"><span class="meta">#</span><span class="bash">中间不能有空格，可以使用下划线（_）</span></span><br><span class="line"><span class="meta">#</span><span class="bash">不能使用标点符号</span></span><br><span class="line"><span class="meta">#</span><span class="bash">不能使用bash中的关键字</span></span><br><span class="line">your_test="test"</span><br></pre></td></tr></table></figure>
+<p>除了显式地直接赋值，还可以用语句给变量赋值，如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">讲 /etc 下的目录文件名循环取出</span></span><br><span class="line">for file in `ls /etc`</span><br><span class="line">或</span><br><span class="line">for file in $(ls /etc)</span><br></pre></td></tr></table></figure>
+<p>使用一个定义过的变量，只要在变量名前面加美元符号即可，如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">变量名外面的花括号是可选的，加不加都行，加花括号是为了帮助解释器识别变量的边界</span></span><br><span class="line">your_test="test"</span><br><span class="line">echo $your_test</span><br><span class="line">echo $&#123;your_test&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>只读变量:使用 readonly 命令可以将变量定义为只读变量，只读变量的值不能被改变。改变了会报错</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">myUrl="http://www.google.com"</span><br><span class="line">readonly myUrl</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>条件判断—if</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">if条件; then</span><br><span class="line">  command</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">if 条件; then</span><br><span class="line">  command</span><br><span class="line">elif 条件; then</span><br><span class="line">  command</span><br><span class="line">else</span><br><span class="line">  command</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<li><p>删除变量:使用 unset 命令可以删除变量。unset 命令不能删除只读变量。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unset variable_test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>example:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">myUrl="https://skyxin888.github.io"</span><br><span class="line">unset myUrl</span><br><span class="line">echo $myUrl</span><br></pre></td></tr></table></figure>
+<p> 以上没有任何输出。</p>
+</li>
+<li><p><strong>变量类型</strong></p>
+<ul>
+<li>局部变量: 局部变量在脚本或命令中定义，仅在当前shell实例中有效，其他shell启动的程序不能访问局部变量。</li>
+<li>环境变量:所有的程序，包括shell启动的程序，都能访问环境变量，有些程序需要环境变量来保证其正常运行。必要的时候shell脚本也可以定义环境变量。</li>
+<li>shell变量:shell变量是由shell程序设置的特殊变量。shell变量中有一部分是环境变量，有一部分是局部变量，这些变量保证了shell的正常运行</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>字符串</strong></p>
+<p>shell编程中最常用最有用的数据类型，字符串可以用单引号，也可以用双引号，也可以不用引号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">单引号里的任何字符都会原样输出，单引号字符串中的变量是无效的</span></span><br><span class="line"><span class="meta">#</span><span class="bash">单引号字串中不能出现单独一个的单引号（对单引号使用转义符后也不行），但可成对出现，作为字符串拼接使用</span></span><br><span class="line">str='this is a string'</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">双引号里可以有变量</span></span><br><span class="line"><span class="meta">#</span><span class="bash">双引号里可以出现转义字符</span></span><br><span class="line">your_name='Golden'</span><br><span class="line">str="Hello, I know you are \"$your_name\"! \n"</span><br><span class="line">echo -e $str</span><br></pre></td></tr></table></figure>
+<p>输出结果为：Hello, I know you are “Golden”! </p>
+<ul>
+<li><p>拼接字符串</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">your_name="Golden"</span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用双引号拼接</span></span><br><span class="line">greeting="hello, "$your_name" !"</span><br><span class="line">greeting_1="hello, $&#123;your_name&#125; !"</span><br><span class="line">echo $greeting  $greeting_1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用单引号拼接</span></span><br><span class="line">greeting_2='hello, '$your_name' !'</span><br><span class="line">greeting_3='hello, $&#123;your_name&#125; !'</span><br><span class="line">echo $greeting_2  $greeting_3</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">输出结果</span></span><br><span class="line">hello, Golden ! hello, Golden !</span><br><span class="line">hello, Golden ! hello, $&#123;your_name&#125; !</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取字符串长度</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">string="abcd"</span><br><span class="line">echo $&#123;#string&#125; #输出 4</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>提取子字符串</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">以下实例从字符串第 2 个字符开始截取 4 个字符</span></span><br><span class="line">string="Golden is a great site"</span><br><span class="line">echo $&#123;string:1:4&#125; # 输出 olde</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查找子字符串</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">查找字符 i 或 o 的位置(哪个字母先出现就计算哪个)</span></span><br><span class="line">string="Golden is a great site"</span><br><span class="line">echo `expr index "$&#123;string&#125;" io`  # 输出 2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字符串操作</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> <span class="comment"># 是去掉左边(在键盘上 # 在 $ 之左边)</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> % 是去掉右边(在键盘上 % 在 $ 之右边)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 单一符号是最小匹配;两个符号是最大匹配</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> *是用来匹配不要的字符，也就是想要去掉的那部分</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还有指定字符分隔号，与*配合，决定取哪部分</span></span><br><span class="line">file='/dir1/dir2/dir3/my.file.txt'</span><br><span class="line">echo $&#123;file#*/&#125; # 去除第一个/以及左边的字符串 ， 输出dir1/dir2/dir3/my.file.txt</span><br><span class="line"></span><br><span class="line">echo $&#123;file##*/&#125;# 去除最后一个/以及左边的字符串，输出 my.file.txt</span><br><span class="line"></span><br><span class="line">echo $&#123;file#*.&#125; # 去除第一个.以及左边的字符串 ，输出file.txt</span><br><span class="line"></span><br><span class="line">echo $&#123;file##*.&#125;# 去除最后个.以及左边的字符串 ，输出txt</span><br><span class="line"></span><br><span class="line">echo $&#123;file%/*&#125; # 去除最后/以及右边的字符串，输出 /dir1/dir2/dir3</span><br><span class="line"></span><br><span class="line">echo $&#123;file%%/*&#125;# 去除第一个/以及右边的字符串，输出 空</span><br><span class="line"></span><br><span class="line">echo $&#123;file%.*&#125;# 去除最后.以及右边的字符串，输出 /dir1/dir2/dir3/my.file</span><br><span class="line"></span><br><span class="line">echo $&#123;file%%.*&#125;# 去除第一个。以及右边的字符串，输出/dir1/dir2/dir3/my</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根据状态为变量赋值</p>
+<p>| 命令                 | 解释                                                  | 备注                 |<br>| ——————– | —————————————————– | ——————– |<br>| ${file-my.file.txt}  | 若 $file 没设定,则使用 my.file.txt 作传回值           | 空值及非空值不作处理 |<br>| ${file:-my.file.txt} | 若 $file 没有设定或为空值,则使用 my.file.txt 作传回值 | 非空值时不作处理     |</p>
+</li>
+</ul>
 </li>
 </ul>
 
@@ -217,7 +271,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2019-05-07T09:04:43.291Z" itemprop="dateUpdated">2019-05-07 17:04:43</time>
+    最后更新时间：<time datetime="2019-05-08T09:13:21.047Z" itemprop="dateUpdated">2019-05-08 17:13:21</time>
 </span><br>
 
 
@@ -300,9 +354,9 @@
 
   
     <div class="waves-block waves-effect next">
-      <a href="/2019/05/06/hello-world/" id="post-next" class="post-nav-link">
+      <a href="/2019/05/06/AMS/" id="post-next" class="post-nav-link">
         <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
-        <h4 class="title">Hello World</h4>
+        <h4 class="title">AMS</h4>
       </a>
     </div>
   
