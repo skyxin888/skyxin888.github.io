@@ -28,12 +28,12 @@
 <meta property="og:site_name" content="Golden&#39;s Blog">
 <meta property="og:description" content="Android中的IPC方式——Binder（一）概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://github.com/skyxin888/2019/05/10/Android中的IPC方式——Binder（一）/1.png">
-<meta property="og:updated_time" content="2019-05-10T08:23:50.978Z">
+<meta property="og:image" content="https://github.com/2019/05/10/Android中的IPC方式——Binder（一）/1.png">
+<meta property="og:updated_time" content="2019-05-10T08:38:15.873Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android中的IPC方式——Binder（一）">
 <meta name="twitter:description" content="Android中的IPC方式——Binder（一）概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通">
-<meta name="twitter:image" content="https://github.com/skyxin888/2019/05/10/Android中的IPC方式——Binder（一）/1.png">
+<meta name="twitter:image" content="https://github.com/2019/05/10/Android中的IPC方式——Binder（一）/1.png">
     
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
@@ -212,13 +212,7 @@
 <p>传统的 IPC 没有任何安全措施，完全依赖上层协议来确保。Android 作为一个开放性的平台，市场上有各类海量的应用供用户选择安装，所以Android 为每个安装好的 APP 分配了自己的 UID，故而进程的 UID 是鉴别进程身份的重要标志来鉴别身份。</p>
 </li>
 </ul>
-<h2 id="Linux进程间通信"><a href="#Linux进程间通信" class="headerlink" title="Linux进程间通信"></a>Linux进程间通信</h2><h3 id="基本概念介绍"><a href="#基本概念介绍" class="headerlink" title="基本概念介绍"></a>基本概念介绍</h3><figure class="image-bubble">
-                <div class="img-lightbox">
-                    <div class="overlay"></div>
-                    <img src="/skyxin888/2019/05/10/Android中的IPC方式——Binder（一）/1.png" alt="1" title>
-                </div>
-                <div class="image-caption">1</div>
-            </figure>
+<h2 id="Linux进程间通信"><a href="#Linux进程间通信" class="headerlink" title="Linux进程间通信"></a>Linux进程间通信</h2><h3 id="基本概念介绍"><a href="#基本概念介绍" class="headerlink" title="基本概念介绍"></a>基本概念介绍</h3><img src="/2019/05/10/Android中的IPC方式——Binder（一）/1.png" title="[Linux]">
 <p>上图展示了 Liunx 中跨进程通信涉及到的一些基本概念：</p>
 <ul>
 <li><p><strong>进程隔离</strong><br>进程与进程间内存是不共享的。两个进程就像两个平行的世界，A 进程没法直接访问 B 进程的数据，这就是进程隔离的通俗解释。A 进程和 B 进程之间要进行数据交互就得采用特殊的通信机制：进程间通信（IPC）。</p>
@@ -236,7 +230,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2019-05-10T08:23:50.978Z" itemprop="dateUpdated">2019-05-10 16:23:50</time>
+    最后更新时间：<time datetime="2019-05-10T08:38:15.873Z" itemprop="dateUpdated">2019-05-10 16:38:15</time>
 </span><br>
 
 
