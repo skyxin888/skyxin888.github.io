@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>Android中的IPC方式——Binder（三） | Golden&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="framework">
+    <meta name="description" content="基于Android5.1.1分析，因为API26以后底层相关代码变动。  在client 中 通过bindservice来启动，来看下bindservice源码。 其具体是在/frameworks/base/core/java/android/app/ContextImpl.java 123456789101112131415@Overridepublic boolean bindService">
+<meta name="keywords" content="framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android中的IPC方式——Binder（三）">
+<meta property="og:url" content="https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/index.html">
+<meta property="og:site_name" content="Golden&#39;s Blog">
+<meta property="og:description" content="基于Android5.1.1分析，因为API26以后底层相关代码变动。  在client 中 通过bindservice来启动，来看下bindservice源码。 其具体是在/frameworks/base/core/java/android/app/ContextImpl.java 123456789101112131415@Overridepublic boolean bindService">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-19T09:53:28.333Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android中的IPC方式——Binder（三）">
+<meta name="twitter:description" content="基于Android5.1.1分析，因为API26以后底层相关代码变动。  在client 中 通过bindservice来启动，来看下bindservice源码。 其具体是在/frameworks/base/core/java/android/app/ContextImpl.java 123456789101112131415@Overridepublic boolean bindService">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Golden</h5>
+          <a href="mailto:155173611@qq.com" title="155173611@qq.com" class="mail">155173611@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/skyxin888" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Android中的IPC方式——Binder（三）</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Android中的IPC方式——Binder（三）</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-06-09T07:05:47.000Z" itemprop="datePublished" class="page-time">
+  2019-06-09
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/源码/">源码</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+<article id="post-Android中的IPC方式——Binder（三）" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Android中的IPC方式——Binder（三）</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-06-09 15:05:47" datetime="2019-06-09T07:05:47.000Z" itemprop="datePublished">2019-06-09</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/源码/">源码</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>基于Android5.1.1分析，因为API26以后底层相关代码变动。</p>
+</blockquote>
+<p>在client 中 通过bindservice来启动，来看下bindservice源码。</p>
+<p>其具体是在<strong>/frameworks/base/core/java/android/app/ContextImpl.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">bindService</span><span class="params">(Intent service, ServiceConnection conn,<span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">		warnIfCallingFromSystemProcess();</span><br><span class="line">		<span class="keyword">return</span> bindServiceCommon(service, conn, flags, mMainThread.getHandler(), getUser());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">bindServiceCommon</span><span class="params">(Intent service, ServiceConnection conn, <span class="keyword">int</span> flags,</span></span></span><br><span class="line"><span class="function"><span class="params">	UserHandle user)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">int</span> res = ActivityManagerNative.getDefault().bindService(</span><br><span class="line">		mMainThread.getApplicationThread(), getActivityToken(),</span><br><span class="line">		service, service.resolveTypeIfNeeded(getContentResolver()),</span><br><span class="line">        sd, flags, user.getIdentifier());</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>/frameworks/base/core/java/android/app/ActivityManagerNative.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityManagerNative</span> <span class="keyword">extends</span> <span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">IActivityManager</span></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *  //最终返回的还是一个ActivityManagerProxy对象</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">public</span> IActivityManager <span class="title">asInterface</span><span class="params">(IBinder obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (obj == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        IActivityManager in =</span><br><span class="line">            (IActivityManager)obj.queryLocalInterface(descriptor);</span><br><span class="line">        <span class="keyword">if</span> (in != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> in;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//这里面的Binder类型的obj参数会作为ActivityManagerProxy的成员变量保存为mRemote成员变量，负责进行IPC通信</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ActivityManagerProxy(obj);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *  //从类声明上，我们可以看到ActivityManagerNative是Binder的一个子类，而且实现了IActivityManager接口</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">public</span> IActivityManager <span class="title">getDefault</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    	<span class="keyword">return</span> gDefault.get();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//通过单例模式获取一个IActivityManager对象，这个对象通过asInterface(b)获得 </span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton&lt;IActivityManager&gt; gDefault = <span class="keyword">new</span> Singleton&lt;IActivityManager&gt;()&#123;</span><br><span class="line">        <span class="function"><span class="keyword">protected</span> IActivityManager <span class="title">create</span><span class="params">()</span></span>&#123;</span><br><span class="line">        IBinder b = ServiceManager.getService(<span class="string">"activity"</span>); </span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</span><br><span class="line">        	Log.v(<span class="string">"ActivityManager"</span>, <span class="string">"default service binder = "</span> + b);</span><br><span class="line">        &#125;</span><br><span class="line">        IActivityManager am = asInterface(b); </span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</span><br><span class="line">        	Log.v(<span class="string">"ActivityManager"</span>, <span class="string">"default service = "</span> + am);</span><br><span class="line">        &#125;</span><br><span class="line">        	<span class="keyword">return</span> am;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>/frameworks/base/core/java/android/app/IActivityManager.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IActivityManager</span> <span class="keyword">extends</span> <span class="title">IInterface</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">bindService</span><span class="params">(IApplicationThread caller, IBinder token, Intent service, String resolvedType,IServiceConnection connection, <span class="keyword">int</span> flags, <span class="keyword">int</span> userId)</span> <span class="keyword">throws</span> RemoteException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">unbindService</span><span class="params">(IServiceConnection connection)</span> <span class="keyword">throws</span> RemoteException</span>;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ActivityManagerNative.getDefault()获得IActivityManager,IActivitymanager继承于IInterface，这个结构是不是跟我们之前看的IStudentManager很像，那么<code>IActivityManager.bindservice()</code>,应该由它的静态内部类<code>Proxy</code>来实现。但是IActivityManager内部类并没有，其实是通过其他类来实现同样功能只是名称换了。这个类就是ActivityManagerNative。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityManagerNative</span> <span class="keyword">extends</span> <span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">IActivityManager</span></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span><span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (code) &#123;</span><br><span class="line">            <span class="keyword">case</span> BIND_SERVICE_TRANSACTION: </span><br><span class="line">                data.enforceInterface(IActivityManager.descriptor);</span><br><span class="line">                IBinder b = data.readStrongBinder();</span><br><span class="line">                IApplicationThread app = ApplicationThreadNative.asInterface(b);</span><br><span class="line">                IBinder token = data.readStrongBinder();</span><br><span class="line">                Intent service = Intent.CREATOR.createFromParcel(data);</span><br><span class="line">                String resolvedType = data.readString();</span><br><span class="line">                b = data.readStrongBinder();</span><br><span class="line">                <span class="keyword">int</span> fl = data.readInt();</span><br><span class="line">                <span class="keyword">int</span> userId = data.readInt();</span><br><span class="line">                IServiceConnection conn = IServiceConnection.Stub.asInterface(b);</span><br><span class="line">                <span class="keyword">int</span> res = bindService(app, token, service, resolvedType, conn, fl, userId);</span><br><span class="line">                reply.writeNoException();</span><br><span class="line">                reply.writeInt(res);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">ActivityManagerProxy</span> <span class="keyword">implements</span> <span class="title">IActivityManager</span></span>&#123;</span><br><span class="line">	    ...</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="title">ActivityManagerProxy</span><span class="params">(IBinder remote)</span></span>&#123;</span><br><span class="line">			mRemote = remote;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="function"><span class="keyword">public</span> IBinder <span class="title">asBinder</span><span class="params">()</span></span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			<span class="keyword">return</span> mRemote;</span><br><span class="line">		&#125;</span><br><span class="line">		...</span><br><span class="line">		</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">bindService</span><span class="params">(IApplicationThread caller, IBinder token,</span></span></span><br><span class="line"><span class="function"><span class="params">Intent service, String resolvedType, IServiceConnection connection,<span class="keyword">int</span> flags, <span class="keyword">int</span> userId)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            Parcel data = Parcel.obtain();</span><br><span class="line">            Parcel reply = Parcel.obtain();</span><br><span class="line">            data.writeInterfaceToken(IActivityManager.descriptor);</span><br><span class="line">            data.writeStrongBinder(caller != <span class="keyword">null</span> ? caller.asBinder() : <span class="keyword">null</span>);</span><br><span class="line">            data.writeStrongBinder(token);</span><br><span class="line">            service.writeToParcel(data, <span class="number">0</span>);</span><br><span class="line">            data.writeString(resolvedType);</span><br><span class="line">            data.writeStrongBinder(connection.asBinder());</span><br><span class="line">            data.writeInt(flags);</span><br><span class="line">            data.writeInt(userId);</span><br><span class="line">            mRemote.transact(BIND_SERVICE_TRANSACTION, data, reply, <span class="number">0</span>);</span><br><span class="line">            reply.readException();</span><br><span class="line">            <span class="keyword">int</span> res = reply.readInt();</span><br><span class="line">            data.recycle();</span><br><span class="line">            reply.recycle();</span><br><span class="line">            <span class="keyword">return</span> res;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到ActivityManagerNative继承Binder实现IActivityManager，ActivityManagerNative就相当于Stub。</p>
+<p>ActivityManagerProxy就是Proxy。</p>
+<p>通过调用到的<code>mRemote.transact(BIND_SERVICE_TRANSACTION, data, reply, 0);</code>调用到Stub中的<code>onTranact()</code>,而Stub的具体实现类则是Activity’ManagerService,最后就是在ActivityManagerService中的<code>bindservice()</code>。</p>
+<p><strong>/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityManagerService</span> <span class="keyword">extends</span> <span class="title">ActivityManagerNative</span> <span class="keyword">implements</span> <span class="title">Watchdog</span>.<span class="title">Monitor</span>, <span class="title">BatteryStatsImpl</span>.<span class="title">BatteryCallback</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">final</span> ActiveServices mServices;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">bindService</span><span class="params">(IApplicationThread caller, IBinder token,Intent service, String resolvedType,IServiceConnection connection, <span class="keyword">int</span> flags, <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        enforceNotIsolatedCaller(<span class="string">"bindService"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Refuse possible leaked file descriptors</span></span><br><span class="line">        <span class="keyword">if</span> (service != <span class="keyword">null</span> &amp;&amp; service.hasFileDescriptors() == <span class="keyword">true</span>) &#123;</span><br><span class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"File descriptors passed in Intent"</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> mServices.bindServiceLocked(caller, token, service, resolvedType,</span><br><span class="line">            connection, flags, userId);</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>bindservice主要分为四种情况 </p>
+<ul>
+<li>server整个进程都没有启动</li>
+<li>server进程启动了，但是里面的service没有创建</li>
+<li>server进程启动了，里面的service也创建了，但是没有绑定过，回调onBind()</li>
+<li>server进程启动了，里面的service创建了，也被绑定过，回调onRebind()</li>
+</ul>
+<p><strong>/frameworks/base/services/core/java/com/android/server/am/ActiveServices.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ActiveServices</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">bindServiceLocked</span><span class="params">(IApplicationThread caller, IBinder token,Intent service, 	String resolvedType,IServiceConnection connection, <span class="keyword">int</span> flags, <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> ((flags&amp;Context.BIND_AUTO_CREATE) != <span class="number">0</span>) &#123;</span><br><span class="line">            s.lastActivity = SystemClock.uptimeMillis();</span><br><span class="line">            <span class="keyword">if</span> (bringUpServiceLocked(s, service.getFlags(), callerFg, <span class="keyword">false</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">//进程启动service也创建的情况下并且绑定了， 回调onRebind()  </span></span><br><span class="line">        <span class="keyword">if</span> (s.app != <span class="keyword">null</span> &amp;&amp; b.intent.received) &#123;</span><br><span class="line">            <span class="comment">// Service is already running, so we can immediately</span></span><br><span class="line">            <span class="comment">// publish the connection.</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                c.conn.connected(s.name, b.intent.binder);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                Slog.w(TAG, <span class="string">"Failure sending service "</span> + s.shortName</span><br><span class="line">                        + <span class="string">" to connection "</span> + c.conn.asBinder()</span><br><span class="line">                        + <span class="string">" (in "</span> + c.binding.client.processName + <span class="string">")"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// If this is the first app connected back to this binding,</span></span><br><span class="line">            <span class="comment">// and the service had previously asked to be told when</span></span><br><span class="line">            <span class="comment">// rebound, then do so.</span></span><br><span class="line">            <span class="keyword">if</span> (b.intent.apps.size() == <span class="number">1</span> &amp;&amp; b.intent.doRebind) &#123;</span><br><span class="line">                requestServiceBindingLocked(s, b.intent, callerFg, <span class="keyword">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!b.intent.requested) &#123;</span><br><span class="line">            requestServiceBindingLocked(s, b.intent, callerFg, <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">    <span class="comment">//server整个进程都没有启动,server进程启动了，但是里面的service没有创建  </span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">final</span> String <span class="title">bringUpServiceLocked</span><span class="params">(ServiceRecord r,<span class="keyword">int</span> intentFlags, 				<span class="keyword">boolean</span> execInFg, <span class="keyword">boolean</span> whileRestarting)</span> </span>&#123;</span><br><span class="line">     	</span><br><span class="line">        <span class="keyword">if</span> (!isolated) &#123;</span><br><span class="line">            app = mAm.getProcessRecordLocked(procName, r.appInfo.uid, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (DEBUG_MU) Slog.v(TAG_MU, <span class="string">"bringUpServiceLocked: appInfo.uid="</span> + r.appInfo.uid + <span class="string">" app="</span> + app);</span><br><span class="line">            <span class="keyword">if</span> (app != <span class="keyword">null</span> &amp;&amp; app.thread != <span class="keyword">null</span>) &#123;<span class="comment">//进程启动了service没有创建</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    app.addPackage(r.appInfo.packageName, r.appInfo.versionCode, mAm.mProcessStats);</span><br><span class="line">                    realStartServiceLocked(r, app, execInFg);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">                    Slog.w(TAG, <span class="string">"Exception when starting service "</span> + r.shortName, e);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// If a dead object exception was thrown -- fall through to</span></span><br><span class="line">                <span class="comment">// restart the application.</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//进程未启动的情况</span></span><br><span class="line">        <span class="keyword">if</span> (app == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((app=mAm.startProcessLocked(procName, r.appInfo, <span class="keyword">true</span>, intentFlags,</span><br><span class="line">                    <span class="string">"service"</span>, r.name, <span class="keyword">false</span>, isolated, <span class="keyword">false</span>)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                String msg = <span class="string">"Unable to launch app "</span></span><br><span class="line">                        + r.appInfo.packageName + <span class="string">"/"</span></span><br><span class="line">                        + r.appInfo.uid + <span class="string">" for service "</span></span><br><span class="line">                        + r.intent.getIntent() + <span class="string">": process is bad"</span>;</span><br><span class="line">                Slog.w(TAG, msg);</span><br><span class="line">                bringDownServiceLocked(r);</span><br><span class="line">                <span class="keyword">return</span> msg;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (isolated) &#123;</span><br><span class="line">                r.isolatedProc = app;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">realStartServiceLocked</span><span class="params">(ServiceRecord r,</span></span></span><br><span class="line"><span class="function"><span class="params">		ProcessRecord app, <span class="keyword">boolean</span> execInFg)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">          app.thread.scheduleCreateService(r, r.serviceInfo,                     				mAm.compatibilityInfoForPackageLocked(r.serviceInfo.applicationInfo),</span><br><span class="line">		...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对应的上述四种情况</p>
+<ul>
+<li><p>server整个进程都没有启动<br><code>bindServiceLocked()</code>-&gt;<code>bringUpServiceLocked()</code> 通过<code>mAm.startProcessLocked()</code>启动进程，<code>bringDownServiceLocked(r);</code>来启动服务。</p>
+</li>
+<li><p>server进程启动了，但是里面的service没有创建<br><code>bindServiceLocked()</code>-&gt;<code>bringUpServiceLocked()</code>-&gt;<code>realStartServiceLocked(r, app, execInFg);</code>后续跟一下</p>
+</li>
+<li><p>server进程启动了，里面的service也创建了，但是没有绑定过，回调onBind()</p>
+<p><code>bindServiceLocked()</code>-&gt;<code>requestServiceBindingLocked(s, b.intent, callerFg, false);</code></p>
+</li>
+<li><p>server进程启动了，里面的service创建了，也被绑定过，回调onRebind()<br><code>bindServiceLocked()</code>-&gt;<code>requestServiceBindingLocked(s, b.intent, callerFg, true);</code></p>
+</li>
+</ul>
+<p>第一种情况没什么好说的，看一下第二种情况，从上面代码看到<code>realStartServiceLocked()</code>调用了<code>scheduleCreateService()</code></p>
+<p><strong>/frameworks/base/core/java/android/app/ActivityThread.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">scheduleCreateService</span><span class="params">(IBinder token,</span></span></span><br><span class="line"><span class="function"><span class="params">	ServiceInfo info, CompatibilityInfo compatInfo, <span class="keyword">int</span> processState)</span> </span>&#123;</span><br><span class="line">		updateProcessState(processState, <span class="keyword">false</span>);</span><br><span class="line">		CreateServiceData s = <span class="keyword">new</span> CreateServiceData();</span><br><span class="line">		s.token = token;</span><br><span class="line">		s.info = info;</span><br><span class="line">		s.compatInfo = compatInfo;</span><br><span class="line"></span><br><span class="line">		sendMessage(H.CREATE_SERVICE, s);</span><br><span class="line">&#125;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">     ...</span><br><span class="line">    <span class="keyword">case</span> CREATE_SERVICE:</span><br><span class="line">        Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"serviceCreate"</span>);</span><br><span class="line">        handleCreateService((CreateServiceData)msg.obj);</span><br><span class="line">        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">	...</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleCreateService</span><span class="params">(CreateServiceData data)</span> </span>&#123;</span><br><span class="line">     ...</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">            java.lang.ClassLoader cl = packageInfo.getClassLoader();</span><br><span class="line">            service = (Service) cl.loadClass(data.info.name).newInstance();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!mInstrumentation.onException(service, e)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">                    <span class="string">"Unable to instantiate service "</span> + data.info.name</span><br><span class="line">                    + <span class="string">": "</span> + e.toString(), e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>这里可以看到最后通过反射来创建service。</p>
+<p>第三、四种情况，都是调用的从ActiveService中<code>requestServiceBindingLocked()</code>只是最后一个参数不一样。</p>
+<p><strong>/frameworks/base/services/core/java/com/android/server/am/ActiveServices.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">requestServiceBindingLocked</span><span class="params">(ServiceRecord r,</span></span></span><br><span class="line"><span class="function"><span class="params">        IntentBindRecord i, <span class="keyword">boolean</span> execInFg, <span class="keyword">boolean</span> rebind)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (r.app == <span class="keyword">null</span> || r.app.thread == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// If service is not currently running, can't yet bind.</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ((!i.requested || rebind) &amp;&amp; i.apps.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            bumpServiceExecutingLocked(r, execInFg, <span class="string">"bind"</span>);</span><br><span class="line">            r.app.forceProcessStateUpTo(ActivityManager.PROCESS_STATE_SERVICE);</span><br><span class="line">            r.app.thread.scheduleBindService(r, i.intent.getIntent(), rebind,</span><br><span class="line">                    r.app.repProcState);</span><br><span class="line">            <span class="keyword">if</span> (!rebind) &#123;</span><br><span class="line">                i.requested = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            i.hasBound = <span class="keyword">true</span>;</span><br><span class="line">            i.doRebind = <span class="keyword">false</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">            <span class="keyword">if</span> (DEBUG_SERVICE) Slog.v(TAG, <span class="string">"Crashed while binding "</span> + r);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>发现跟调用到<strong>ActivityThread.java</strong>的<code>scheduleBindService()</code></p>
+<p><strong>/frameworks/base/core/java/android/app/ActivityThread.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">scheduleBindService</span><span class="params">(IBinder token, Intent intent,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">boolean</span> rebind, <span class="keyword">int</span> processState)</span> </span>&#123;</span><br><span class="line">    updateProcessState(processState, <span class="keyword">false</span>);</span><br><span class="line">    BindServiceData s = <span class="keyword">new</span> BindServiceData();</span><br><span class="line">    s.token = token;</span><br><span class="line">    s.intent = intent;</span><br><span class="line">    s.rebind = rebind;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (DEBUG_SERVICE)</span><br><span class="line">        Slog.v(TAG, <span class="string">"scheduleBindService token="</span> + token + <span class="string">" intent="</span> + intent + <span class="string">" uid="</span></span><br><span class="line">                + Binder.getCallingUid() + <span class="string">" pid="</span> + Binder.getCallingPid());</span><br><span class="line">    sendMessage(H.BIND_SERVICE, s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">     ...</span><br><span class="line"> <span class="keyword">case</span> BIND_SERVICE:</span><br><span class="line">    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"serviceBind"</span>);</span><br><span class="line">    handleBindService((BindServiceData)msg.obj);</span><br><span class="line">    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">	...</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleBindService</span><span class="params">(BindServiceData data)</span> </span>&#123;</span><br><span class="line">        Service s = mServices.get(data.token);</span><br><span class="line">        <span class="keyword">if</span> (DEBUG_SERVICE)</span><br><span class="line">            Slog.v(TAG, <span class="string">"handleBindService s="</span> + s + <span class="string">" rebind="</span> + data.rebind);</span><br><span class="line">        <span class="keyword">if</span> (s != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                data.intent.setExtrasClassLoader(s.getClassLoader());</span><br><span class="line">                data.intent.prepareToEnterProcess();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (!data.rebind) &#123;</span><br><span class="line">                        IBinder binder = s.onBind(data.intent);</span><br><span class="line">                       <span class="comment">//重点</span></span><br><span class="line">                        ActivityManagerNative.getDefault().publishService(</span><br><span class="line">                                data.token, data.intent, binder);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        s.onRebind(data.intent);</span><br><span class="line">                        ActivityManagerNative.getDefault().serviceDoneExecuting(</span><br><span class="line">                                data.token, SERVICE_DONE_EXECUTING_ANON, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    ensureJitEnabled();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (RemoteException ex) &#123;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!mInstrumentation.onException(s, e)) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">                            <span class="string">"Unable to bind to service "</span> + s</span><br><span class="line">                            + <span class="string">" with "</span> + data.intent + <span class="string">": "</span> + e.toString(), e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>最后调用<code>handleBindService()</code>首先从mServices在这个map去取服务，服务不为空后,根据flag来判断调用onBind()还是 onReind()，s.onBind(data.intent)返回Binder。这个可以根据前面aidl使用的部分，service在<code>OnBind()</code>方法需要返回一个IBineder，而这个IBinder是 IStudentManager.Stub,由Service实现。</p>
+<p><strong>/frameworks/base/services/core/java/com/android/server/am/ActiveServices.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publishService</span><span class="params">(IBinder token, Intent intent, IBinder service)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Refuse possible leaked file descriptors</span></span><br><span class="line">    <span class="keyword">if</span> (intent != <span class="keyword">null</span> &amp;&amp; intent.hasFileDescriptors() == <span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"File descriptors passed in Intent"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!(token <span class="keyword">instanceof</span> ServiceRecord)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid service token"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        mServices.publishServiceLocked((ServiceRecord)token, intent, service);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publishService</span><span class="params">(IBinder token, Intent intent, IBinder service)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Refuse possible leaked file descriptors</span></span><br><span class="line">    <span class="keyword">if</span> (intent != <span class="keyword">null</span> &amp;&amp; intent.hasFileDescriptors() == <span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"File descriptors passed in Intent"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!(token <span class="keyword">instanceof</span> ServiceRecord)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid service token"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        mServices.publishServiceLocked((ServiceRecord)token, intent, service);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>/frameworks/base/services/core/java/com/android/server/am/ActiveServices.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">publishServiceLocked</span><span class="params">(ServiceRecord r, Intent intent, IBinder service)</span> </span>&#123;</span><br><span class="line">    ArrayList&lt;ConnectionRecord&gt; clist = r.connections.valueAt(conni);</span><br><span class="line">	ConnectionRecord c = clist.get(i);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        c.conn.connected(r.name, service);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        Slog.w(TAG, <span class="string">"Failure sending service "</span> + r.name +</span><br><span class="line">              <span class="string">" to connection "</span> + c.conn.asBinder() +</span><br><span class="line">              <span class="string">" (in "</span> + c.binding.client.processName + <span class="string">")"</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">	....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到这里可以看到我们在service实现的onBind方法返回的 IBinder对象通过<code>publishService()</code>-&gt;<code>publishServiceLocked()</code>传递。</p>
+<p><strong>ConnectionRecord.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ConnectionRecord</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> AppBindRecord binding;    <span class="comment">// The application/service binding.</span></span><br><span class="line">    <span class="keyword">final</span> ActivityRecord activity;  <span class="comment">// If non-null, the owning activity.</span></span><br><span class="line">    <span class="keyword">final</span> IServiceConnection conn; </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>c.conn.connected(r.name, service);</code>传递的service 就是我们刚刚的IBinder,c.conn最终指的是IServiceConnection,具体实现为<br><strong>/frameworks/base/core/java/android/app/LoadedApk.javaLoadedApk.ServiceDispatcher.InnerConnection</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceDispatcher</span> </span>&#123;</span><br><span class="line"> ...</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InnerConnection</span> <span class="keyword">extends</span> <span class="title">IServiceConnection</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> WeakReference&lt;LoadedApk.ServiceDispatcher&gt; mDispatcher;</span><br><span class="line">        InnerConnection(LoadedApk.ServiceDispatcher sd) &#123;</span><br><span class="line">            mDispatcher = <span class="keyword">new</span> WeakReference&lt;LoadedApk.ServiceDispatcher&gt;(sd);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">connected</span><span class="params">(ComponentName name, IBinder service)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            LoadedApk.ServiceDispatcher sd = mDispatcher.get();</span><br><span class="line">            <span class="keyword">if</span> (sd != <span class="keyword">null</span>) &#123;</span><br><span class="line">                sd.connected(name, service);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">...</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">connected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mActivityThread != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mActivityThread.post(<span class="keyword">new</span> RunConnection(name, service, <span class="number">0</span>));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            doConnected(name, service);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">RunConnection</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    RunConnection(ComponentName name, IBinder service, <span class="keyword">int</span> command) &#123;</span><br><span class="line">        mName = name;</span><br><span class="line">        mService = service;</span><br><span class="line">        mCommand = command;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mCommand == <span class="number">0</span>) &#123;</span><br><span class="line">            doConnected(mName, mService);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mCommand == <span class="number">1</span>) &#123;</span><br><span class="line">            doDeath(mName, mService);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> ComponentName mName;</span><br><span class="line">    <span class="keyword">final</span> IBinder mService;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> mCommand;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// If there was an old service, it is not disconnected.</span></span><br><span class="line">    <span class="keyword">if</span> (old != <span class="keyword">null</span>) &#123;</span><br><span class="line">        mConnection.onServiceDisconnected(name);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// If there is a new service, it is now connected.</span></span><br><span class="line">    <span class="keyword">if</span> (service != <span class="keyword">null</span>) &#123;</span><br><span class="line">        mConnection.onServiceConnected(name, service);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>mActivityThread.post(new RunConnection(name, service, 0));在RunConnection的run方法中调用了doConnected方法，doConnected()中调用了<code>onServiceDisconnected()</code> 和<code>onServiceConnected()</code></p>
+<p>这个就是由我们client端创建serviceConnetion时需要实现的方法。这样最终在客户端的<code>onServiceConnected()</code>获取了由service实现的IBinder。</p>
+<p>整个的流程走完了，在我们刚刚分析中无论是AMS 还是 后面的IService 基本上都看到了类似 Binder的 方式。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">AIDL接口</th>
+<th style="text-align:center">Stub</th>
+<th style="text-align:center">Proxy</th>
+<th style="text-align:center">Stub实现类</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">IStudentManager.aidl</td>
+<td style="text-align:center">IStudentManager.Stub</td>
+<td style="text-align:center">IStudentManager.Proxy</td>
+<td style="text-align:center">StudentManagerService</td>
+</tr>
+<tr>
+<td style="text-align:center">IActivityManager</td>
+<td style="text-align:center">ActivityManagerNative</td>
+<td style="text-align:center">ActivityManagerProxy</td>
+<td style="text-align:center">ActivityManagerService</td>
+</tr>
+</tbody>
+</table>
+<p>在我们的实际项目中会使用到非常多的系统服务，这时候也是需要进行进程间通信，他们都存在不同的进程中，如果都通过aidl方式来调用就会很繁琐。所以Android给我提供了ServiceManager来统一管理。（ServiceManager运行在自己的进程中）</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-06-19T09:53:28.333Z" itemprop="dateUpdated">2019-06-19 17:53:28</time>
+</span><br>
+
+
+        
+    </div>
+    <footer>
+        <a href="https://github.com/skyxin888">
+            <img src="/img/avatar.jpg" alt="Golden">
+            Golden
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/framework/">framework</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/&title=《Android中的IPC方式——Binder（三）》 — Golden's Blog&pic=https://github.com/skyxin888/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/&title=《Android中的IPC方式——Binder（三）》 — Golden's Blog&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Android中的IPC方式——Binder（三）》 — Golden's Blog&url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/&via=https://github.com/skyxin888" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2019/05/20/Android中的IPC方式——Binder（二）/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Android中的IPC方式——Binder（二）</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.png" data-alipay="/img/alipay.png">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Golden &copy; 2015 - 2019</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/&title=《Android中的IPC方式——Binder（三）》 — Golden's Blog&pic=https://github.com/skyxin888/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/&title=《Android中的IPC方式——Binder（三）》 — Golden's Blog&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Android中的IPC方式——Binder（三）》 — Golden's Blog&url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/&via=https://github.com/skyxin888" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://github.com/skyxin888/2019/06/09/Android中的IPC方式——Binder（三）/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '';
+            clearTimeout(titleTime);
+        } else {
+            document.title = 'Golden's Blog';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

@@ -20,19 +20,22 @@
     
     
     <meta name="keywords" content="framework">
-    <meta name="description" content="Android中的IPC方式——Binder（一）概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通">
+    <meta name="description" content="概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、消息队列、贡献内存、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能、稳定性和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通信和本机上进程间的低速">
 <meta name="keywords" content="framework">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android中的IPC方式——Binder（一）">
 <meta property="og:url" content="https://github.com/skyxin888/2019/05/10/Android中的IPC方式——Binder（一）/index.html">
 <meta property="og:site_name" content="Golden&#39;s Blog">
-<meta property="og:description" content="Android中的IPC方式——Binder（一）概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通">
+<meta property="og:description" content="概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、消息队列、贡献内存、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能、稳定性和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通信和本机上进程间的低速">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://github.com/2019/05/10/Android中的IPC方式——Binder（一）/1.png">
-<meta property="og:updated_time" content="2019-05-10T08:38:15.873Z">
+<meta property="og:image" content="https://github.com/2019/05/10/Android中的IPC方式——Binder（一）/2.png">
+<meta property="og:image" content="https://github.com/2019/05/10/Android中的IPC方式——Binder（一）/3.png">
+<meta property="og:image" content="https://github.com/2019/05/10/Android中的IPC方式——Binder（一）/4.png">
+<meta property="og:updated_time" content="2019-06-19T07:13:39.251Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android中的IPC方式——Binder（一）">
-<meta name="twitter:description" content="Android中的IPC方式——Binder（一）概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通">
+<meta name="twitter:description" content="概述简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、消息队列、贡献内存、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能、稳定性和安全性方面考虑。  性能 首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通信和本机上进程间的低速">
 <meta name="twitter:image" content="https://github.com/2019/05/10/Android中的IPC方式——Binder（一）/1.png">
     
     <link rel="shortcut icon" href="/favicon.ico">
@@ -142,6 +145,8 @@
 </time>
 
 
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/源码/">源码</a></li></ul>
+
             
         </h5>
     </div>
@@ -157,7 +162,7 @@
     <aside class="post-widget">
         <nav class="post-toc-wrap" id="post-toc">
             <h4>TOC</h4>
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#Android中的IPC方式——Binder（一）"><span class="post-toc-number">1.</span> <span class="post-toc-text">Android中的IPC方式——Binder（一）</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#概述"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">概述</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Linux进程间通信"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">Linux进程间通信</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#基本概念介绍"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">基本概念介绍</span></a></li></ol></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#概述"><span class="post-toc-number">1.</span> <span class="post-toc-text">概述</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Linux进程间通信"><span class="post-toc-number">2.</span> <span class="post-toc-text">Linux进程间通信</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#基本概念介绍"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">基本概念介绍</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Linux-下的传统-IPC-通信原理"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">Linux 下的传统 IPC 通信原理</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Binder-跨进程通信原理"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">Binder 跨进程通信原理</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Binder-通信模型"><span class="post-toc-number">3.</span> <span class="post-toc-text">Binder 通信模型</span></a></li></ol>
         </nav>
     </aside>
     
@@ -169,6 +174,8 @@
             <time class="post-time" title="2019-05-10 15:08:39" datetime="2019-05-10T07:08:39.000Z" itemprop="datePublished">2019-05-10</time>
 
             
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/源码/">源码</a></li></ul>
+
 
 
             
@@ -179,7 +186,7 @@
 
         </div>
         <div class="post-content" id="post-content" itemprop="postContent">
-            <h1 id="Android中的IPC方式——Binder（一）"><a href="#Android中的IPC方式——Binder（一）" class="headerlink" title="Android中的IPC方式——Binder（一）"></a>Android中的IPC方式——Binder（一）</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能和安全性方面考虑。</p>
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>简单来说，BInder是Android中使用最广泛的IPC（进程间通信）机制。Linux中本身已经拥有了经典的进程间的通信方式，如信号量、管道、消息队列、贡献内存、scoket等。那么Android还是创造了新的IPC方式，主要是基于性能、稳定性和安全性方面考虑。</p>
 <ul>
 <li><p><strong>性能</strong></p>
 <p>首先说说性能上的优势。Socket 作为一款通用接口，其传输效率低，开销大，主要用在跨网络的进程间通信和本机上进程间的低速通信。消息队列和管道采用存储-转发方式，即数据先从发送方缓存区拷贝到内核开辟的缓存区中，然后再从内核缓存区拷贝到接收方缓存区，至少有两次拷贝过程。共享内存虽然无需拷贝，但控制复杂，难以使用。Binder 只需要一次数据拷贝，性能上仅次于共享内存。</p>
@@ -211,6 +218,9 @@
 <li><p><strong>安全性</strong></p>
 <p>传统的 IPC 没有任何安全措施，完全依赖上层协议来确保。Android 作为一个开放性的平台，市场上有各类海量的应用供用户选择安装，所以Android 为每个安装好的 APP 分配了自己的 UID，故而进程的 UID 是鉴别进程身份的重要标志来鉴别身份。</p>
 </li>
+<li><p><strong>稳定性</strong></p>
+<p>基于C/S架构，客户端有什么需求丢给服务端来处理，架构清晰、职责明确又相互独立，自然稳定性更好。虽然贡献内存无需拷贝，但是控制复杂难以使用。</p>
+</li>
 </ul>
 <h2 id="Linux进程间通信"><a href="#Linux进程间通信" class="headerlink" title="Linux进程间通信"></a>Linux进程间通信</h2><h3 id="基本概念介绍"><a href="#基本概念介绍" class="headerlink" title="基本概念介绍"></a>基本概念介绍</h3><img src="/2019/05/10/Android中的IPC方式——Binder（一）/1.png" title="[Linux]">
 <p>上图展示了 Liunx 中跨进程通信涉及到的一些基本概念：</p>
@@ -223,6 +233,54 @@
 <p>从逻辑上进行了用户空间和内核空间的划分，但不可避免的用户空间需要访问内核资源，比如文件操作、访问网络等等。就需要借助<strong>系统调用</strong>来实现，这样保证了所有的资源访问都是在内核的控制下进行的，避免了用户程序对系统资源的越权访问，提升了系统安全性和稳定性。</p>
 </li>
 </ul>
+<h3 id="Linux-下的传统-IPC-通信原理"><a href="#Linux-下的传统-IPC-通信原理" class="headerlink" title="Linux 下的传统 IPC 通信原理"></a><strong>Linux 下的传统 IPC 通信原理</strong></h3><p>消息发送方将要发送的数据存放在内存缓存区中，通过系统调用进入内核态。然后内核程序在内核空间分配内存，开辟一块内核缓存区，调用 <code>copy_from_user()</code>函数将数据从用户空间的内存缓存区拷贝到内核空间的内核缓存区中。</p>
+<p>同样的，接收方进程在接收数据时在自己的用户空间开辟一块内存缓存区，然后内核程序调用<code>copy_to_user()</code>函数将数据从内核缓存区拷贝到接收进程的内存缓存区。</p>
+<img src="/2019/05/10/Android中的IPC方式——Binder（一）/2.png" title="[传统 IPC 通信原理]">
+<p>传统的 IPC 通信方式有两个问题:</p>
+<ul>
+<li>性能低下，一次数据传递需要经历：内存缓存区 –&gt; 内核缓存区 –&gt; 内存缓存区，需要 2 次数据拷贝</li>
+<li>接收数据的缓存区由数据接收进程提供，但是接收进程并不知道需要多大的空间来存放将要传递过来的数据，因此只能开辟尽可能大的内存空间或者先调用 API 接收消息头来获取消息体的大小，这两种做法不是浪费空间就是浪费时间。</li>
+</ul>
+<h3 id="Binder-跨进程通信原理"><a href="#Binder-跨进程通信原理" class="headerlink" title="Binder 跨进程通信原理"></a>Binder 跨进程通信原理</h3><p>从上面看出传统的跨进程通信是需要内核空间做支持的，但是Binder并不是Linux 系统内核的一部分，这样怎么办呢？ Linux 有<strong>动态内核可加载模块</strong>（Loadable Kernel Module，LKM）的机制，模块是具有独立功能的程序，它可以被单独编译，但是不能独立运行。它在运行时被链接到内核作为内核的一部分运行。这样，Android 系统就可以通过动态添加一个内核模块运行在内核空间，用户进程之间通过这个内核模块作为桥梁来实现通信。</p>
+<blockquote>
+<p>在 Android 系统中，这个运行在内核空间，负责各个用户进程通过 Binder 实现通信的内核模块就叫 <strong>Binder 驱动</strong>（Binder Dirver）。</p>
+</blockquote>
+<p>Binder IPC 方式主要是通过内存映射<code>mmap(</code>) 来实现，<code>mmap()</code> 是操作系统中一种内存映射的方法。内存映射简单的讲就是将用户空间的一块内存区域映射到内核空间。</p>
+<p>内存映射能减少数据拷贝次数，实现用户空间和内核空间的高效互动。两个空间各自的修改能直接反映在映射的内存区域，从而被对方空间及时感知。也正因为如此，内存映射能够提供对进程间通信的支持。</p>
+<p>一次完整的Binder IPC过程：</p>
+<ul>
+<li>首先 Binder 驱动在内核空间创建一个数据接收缓存区；</li>
+<li>接着在内核空间开辟一块内核缓存区，建立<strong>内核缓存区</strong>和<strong>内核中数据接收缓存区</strong>之间的映射关系，以及<strong>内核中数据接收缓存区</strong>和<strong>接收进程用户空间地址</strong>的映射关系；</li>
+<li>发送方进程通过系统调用 copy_from_user() 将数据 copy 到内核中的<strong>内核缓存区</strong>，由于内核缓存区和接收进程的用户空间存在内存映射，因此也就相当于把数据发送到了接收进程的用户空间，这样便完成了一次进程间的通信。</li>
+</ul>
+<img src="/2019/05/10/Android中的IPC方式——Binder（一）/3.png" title="[BinderIPC原理]">
+<h2 id="Binder-通信模型"><a href="#Binder-通信模型" class="headerlink" title="Binder 通信模型"></a><strong>Binder 通信模型</strong></h2><p>Binder通信采用C/S架构，从组件视角来说，包含Client、Server、ServiceManager以及Binder驱动，其中ServiceManager用于管理系统中的各种服务。其中 Client、Server、<strong>Service Manager 运行在用户空间</strong>(存疑)，Binder 驱动运行在内核空间。</p>
+<p>统观Binder中的各个组成元素，发现它和TCP/IP网络又很多相同之处。</p>
+<ul>
+<li>Binder驱动——路由器；</li>
+<li>Service Manager ——DNS;</li>
+<li>Binder Client ——客户端；</li>
+<li>Binder Server —— 服务端；</li>
+</ul>
+<p>TCP/IP一个典型的连接过程</p>
+<img src="/2019/05/10/Android中的IPC方式——Binder（一）/4.png" title="[TCP/IP一个典型的连接过程]">
+<p>client和server建立连接通常有以下几个步骤：</p>
+<ul>
+<li><p>Client向DNS查询Google.com的IP地址。</p>
+<p>首先Client要知道DNS的IP地址才可以，这个是在Client接入网络之前就完成的。</p>
+<p>如果Client已经知道了Server的IP自然可以跳过这一个步骤直接与Server连接。比如windows下提供了一个hosts文件用于查询常用域名与IP的对应关系。</p>
+</li>
+<li><p>DNS将查询到的结果返回给Client。</p>
+</li>
+<li><p>Client得知Googlde.com的IP后，向Google服务器发起连接。</p>
+</li>
+<li><p>在这一系列流程中没有谈到Router，因为它的作用就是将数据包投递给目标IP。</p>
+</li>
+</ul>
+<p>在以上整个TCP/IP的模型中，IP地址是彼此间沟通的唯一凭证。其次Router是构建一个通信网络的基础，它根据用户的目标IP来把数据包正确的送达。最后DNS不是必须的。</p>
+<p>类比下 Binder的流程：</p>
+<p>进程1(客户端)想要和进程2(服务端)进行访问，因为他们之间是 跨进程的(跨网络)所以需要Binder驱动(Router)来把请求正确的投递到对方所在的进程(服务端)中，而参与通信的进程都需要持有Binder”颁发”的唯一标志(IP地址)。同样的Binder中的ServiceManager(DNS)也不是必须的，前提是Client能记住进程的Binder标志(IP地址)。特别注意的是这个Binder标志是”动态IP“，意味这每次访问都需要重新获取，而DNS可以完美的解决这个问题，用于管理Binder标志和域名之间的对应关系。</p>
+<p>DNS有自己的IP地址，<strong>那么ServiceManager在Binder的通信过程的唯一标志永远是0。</strong></p>
 
         </div>
 
@@ -230,7 +288,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2019-05-10T08:38:15.873Z" itemprop="dateUpdated">2019-05-10 16:38:15</time>
+    最后更新时间：<time datetime="2019-06-19T07:13:39.251Z" itemprop="dateUpdated">2019-06-19 15:13:39</time>
 </span><br>
 
 
@@ -308,7 +366,14 @@
     </div>
 
     
-<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2019/05/20/Android中的IPC方式——Binder（二）/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">Android中的IPC方式——Binder（二）</h4>
+      </a>
+    </div>
   
 
   
